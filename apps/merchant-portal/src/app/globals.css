@@ -1,0 +1,18 @@
+@import '../../../../libs/ui/src/styles/tokens.css';
+@import '../../../../libs/ui/src/styles/components.css';
+
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, sans-serif;
+  background: #fff;
+  color: var(--color-text);
+}
+
+.mfe-shell {
+  padding: var(--space-8);
+}
+
+.mfe-stack {
+  display: grid;
+  gap: var(--space-6);
+}
