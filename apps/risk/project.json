@@ -1,0 +1,32 @@
+{
+  "name": "risk",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/risk/src",
+  "targets": {
+    "build": {
+      "executor": "@nx/next:build",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/risk",
+        "root": "apps/risk",
+        "buildLibsFromSource": true
+      }
+    },
+    "dev": {
+      "executor": "@nx/next:dev",
+      "options": {
+        "root": "apps/risk",
+        "port": 4202
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/risk/**/*.{ts,tsx,js,jsx}"]
+      }
+    }
+  },
+  "tags": ["type:app", "scope:risk"]
+}

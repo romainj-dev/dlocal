@@ -1,0 +1,32 @@
+{
+  "name": "merchant-portal",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/merchant-portal/src",
+  "targets": {
+    "build": {
+      "executor": "@nx/next:build",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/merchant-portal",
+        "root": "apps/merchant-portal",
+        "buildLibsFromSource": true
+      }
+    },
+    "dev": {
+      "executor": "@nx/next:dev",
+      "options": {
+        "root": "apps/merchant-portal",
+        "port": 4203
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/merchant-portal/**/*.{ts,tsx,js,jsx}"]
+      }
+    }
+  },
+  "tags": ["type:app", "scope:merchant-portal"]
+}

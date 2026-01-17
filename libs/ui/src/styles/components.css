@@ -1,0 +1,49 @@
+.ui-button {
+  border: none;
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-6);
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.ui-button--primary {
+  background: var(--color-brand-500);
+  color: #fff;
+  box-shadow: var(--shadow-soft);
+}
+
+.ui-button--ghost {
+  background: transparent;
+  color: var(--color-brand-500);
+  border: 1px solid rgba(15, 98, 254, 0.2);
+}
+
+.ui-button:active {
+  transform: translateY(1px);
+}
+
+.ui-card {
+  background: #fff;
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-soft);
+}
+
+.ui-section-heading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.ui-section-heading__title {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.ui-section-heading__subtitle {
+  color: var(--color-muted);
+  margin: 0;
+}
