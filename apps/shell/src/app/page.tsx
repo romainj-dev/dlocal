@@ -1,4 +1,5 @@
 import { Card, SectionHeading } from '@dlocal/ui';
+import { MfeWorkspace } from './MfeWorkspace';
 
 const modules = [
   {
@@ -34,6 +35,11 @@ export default function HomePage() {
           </Card>
         ))}
       </div>
+      <SectionHeading
+        title="Live workspaces"
+        subtitle="These modules are loaded at runtime via Module Federation."
+      />
+      <MfeWorkspace />
     </div>
   );
 }
