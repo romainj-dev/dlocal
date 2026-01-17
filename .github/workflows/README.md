@@ -7,8 +7,9 @@
   - Pushes to `main`
 - **Behavior:** Uses `nx affected` to run `lint`, `test`, and `build` for impacted projects.
 - **Caching:**
-  - Node/NPM cache via `actions/setup-node`
+  - Node/pnpm cache via `actions/setup-node`
   - Nx task cache in `.nx/cache`
+- **Package manager:** Uses pnpm and expects `pnpm-lock.yaml` to be present. CI installs with `pnpm install --frozen-lockfile`.
 
 ## Deploy: shell
 - **Workflow:** `deploy-shell.yml`

@@ -36,7 +36,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
+          cache: pnpm
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.28.0
 
       - name: Cache Nx
         uses: actions/cache@v4
@@ -47,10 +52,10 @@ jobs:
             nx-${{ runner.os }}-
 
       - name: Install dependencies
-        run: npm install
+        run: pnpm install --frozen-lockfile
 
       - name: Build shell
-        run: npx nx build shell
+        run: pnpm nx build shell
 
       - name: Deploy shell
         run: echo "Deploying shell with remote URLs: $NEXT_PUBLIC_PAYMENTS_REMOTE_URL, $NEXT_PUBLIC_RISK_REMOTE_URL, $NEXT_PUBLIC_MERCHANT_PORTAL_REMOTE_URL, $NEXT_PUBLIC_REPORTING_REMOTE_URL"

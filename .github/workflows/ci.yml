@@ -20,7 +20,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
+          cache: pnpm
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.28.0
 
       - name: Cache Nx
         uses: actions/cache@v4
@@ -31,10 +36,10 @@ jobs:
             nx-${{ runner.os }}-
 
       - name: Install dependencies
-        run: npm install
+        run: pnpm install --frozen-lockfile
 
       - name: Derive Nx SHAs
         uses: nrwl/nx-set-shas@v4
 
       - name: Run affected targets
-        run: npx nx affected -t lint,test,build --parallel=3
+        run: pnpm nx affected -t lint,test,build --parallel=3
