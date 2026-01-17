@@ -40,6 +40,11 @@ body {
   gap: var(--space-3);
 }
 
+.shell__subtitle {
+  margin: var(--space-2) 0 0;
+  color: var(--color-muted);
+}
+
 .shell__content {
   flex: 1;
 }
@@ -60,6 +65,37 @@ body {
 }
 
 .shell__cards p {
+  margin: 0;
+  color: var(--color-muted);
+}
+
+.mfe-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--space-6);
+}
+
+.mfe-card {
+  min-height: 180px;
+}
+
+.mfe-skeleton__title {
+  font-weight: 600;
+  margin-bottom: var(--space-3);
+}
+
+.mfe-skeleton__line {
+  height: 10px;
+  background: color-mix(in srgb, var(--color-muted) 20%, transparent);
+  border-radius: 999px;
+  margin-bottom: var(--space-2);
+}
+
+.mfe-skeleton__line--short {
+  width: 60%;
+}
+
+.mfe-error p {
   margin: 0;
   color: var(--color-muted);
 }

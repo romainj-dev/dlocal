@@ -1,7 +1,7 @@
 import './globals.css';
 
 import { AuthProvider } from '@dlocal/auth';
-import { Button } from '@dlocal/ui';
+import { ShellHeader } from './ShellHeader';
 
 export const metadata = {
   title: 'dLocal Operations Console',
@@ -14,16 +14,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <AuthProvider>
           <div className="shell">
-            <header className="shell__header">
-              <div>
-                <p className="shell__eyebrow">dLocal</p>
-                <h1>Operations Console</h1>
-              </div>
-              <div className="shell__actions">
-                <Button variant="ghost">Support</Button>
-                <Button>Sign out</Button>
-              </div>
-            </header>
+            <ShellHeader />
             <main className="shell__content">{children}</main>
           </div>
         </AuthProvider>
