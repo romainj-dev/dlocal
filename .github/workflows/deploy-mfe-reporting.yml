@@ -1,0 +1,59 @@
+name: Deploy MFE - Reporting
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Target environment
+        type: choice
+        required: true
+        options:
+          - staging
+          - production
+  push:
+    branches:
+      - main
+    tags:
+      - reporting-v*
+    paths:
+      - apps/reporting/**
+      - libs/**
+      - package.json
+      - nx.json
+      - tsconfig.base.json
+
+jobs:
+  deploy:
+    name: Build and deploy reporting
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment || 'production' }}
+    env:
+      NEXT_PUBLIC_BFF_URL: ${{ vars.BFF_URL }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Cache Nx
+        uses: actions/cache@v4
+        with:
+          path: .nx/cache
+          key: nx-${{ runner.os }}-${{ hashFiles('package.json', 'nx.json', 'tsconfig.base.json') }}
+          restore-keys: |
+            nx-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build reporting
+        run: npx nx build reporting
+
+      - name: Deploy reporting
+        run: echo "Deploying reporting with BFF URL: $NEXT_PUBLIC_BFF_URL"

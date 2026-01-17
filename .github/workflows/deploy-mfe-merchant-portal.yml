@@ -1,0 +1,59 @@
+name: Deploy MFE - Merchant Portal
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Target environment
+        type: choice
+        required: true
+        options:
+          - staging
+          - production
+  push:
+    branches:
+      - main
+    tags:
+      - merchant-portal-v*
+    paths:
+      - apps/merchant-portal/**
+      - libs/**
+      - package.json
+      - nx.json
+      - tsconfig.base.json
+
+jobs:
+  deploy:
+    name: Build and deploy merchant-portal
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment || 'production' }}
+    env:
+      NEXT_PUBLIC_BFF_URL: ${{ vars.BFF_URL }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Cache Nx
+        uses: actions/cache@v4
+        with:
+          path: .nx/cache
+          key: nx-${{ runner.os }}-${{ hashFiles('package.json', 'nx.json', 'tsconfig.base.json') }}
+          restore-keys: |
+            nx-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build merchant-portal
+        run: npx nx build merchant-portal
+
+      - name: Deploy merchant-portal
+        run: echo "Deploying merchant-portal with BFF URL: $NEXT_PUBLIC_BFF_URL"
