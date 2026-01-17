@@ -2,6 +2,7 @@
   "name": "dlocal",
   "version": "0.0.0",
   "private": true,
+  "packageManager": "pnpm@10.28.0",
   "scripts": {
     "nx": "nx",
     "build": "nx run-many --target=build",
@@ -10,25 +11,29 @@
     "test": "nx run-many --target=test"
   },
   "dependencies": {
-    "express": "^4.19.2",
-    "next": "^14.2.5",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "express": "^5.2.1",
+    "next": "^15.5.9",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3"
   },
   "devDependencies": {
-    "@module-federation/nextjs-mf": "^8.2.0",
-    "@nx/eslint": "^19.6.2",
-    "@nx/js": "^19.6.2",
-    "@nx/next": "^19.6.2",
-    "@nx/node": "^19.6.2",
-    "@nx/react": "^19.6.2",
-    "@nx/webpack": "^19.6.2",
-    "@types/express": "^4.17.21",
-    "@types/node": "^20.14.11",
-    "@types/react": "^18.3.3",
-    "@types/react-dom": "^18.3.0",
-    "eslint": "^8.57.0",
-    "eslint-config-next": "^14.2.5",
-    "typescript": "^5.5.4"
+    "@module-federation/nextjs-mf": "^8.8.51",
+    "@nx/eslint": "^22.3.3",
+    "@nx/eslint-plugin": "^22.3.3",
+    "@nx/js": "^22.3.3",
+    "@nx/next": "^22.3.3",
+    "@nx/node": "^22.3.3",
+    "@nx/react": "^22.3.3",
+    "@nx/webpack": "^22.3.3",
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.0.9",
+    "@types/react": "^19.2.8",
+    "@types/react-dom": "^19.2.3",
+    "@typescript-eslint/parser": "^8.53.0",
+    "eslint": "^9.39.2",
+    "eslint-config-next": "^15.5.9",
+    "eslint-config-prettier": "^10.1.8",
+    "nx": "^22.3.3",
+    "typescript": "^5.9.3"
   }
 }
