@@ -1,9 +1,18 @@
 const nx = require('@nx/eslint-plugin');
 
 module.exports = [
+  {
+    ignores: ['**/.next/**']
+  },
   ...nx.configs['flat/base'],
   ...nx.configs['flat/typescript'],
   ...nx.configs['flat/javascript'],
+  {
+    files: ['**/next-env.d.ts'],
+    rules: {
+      '@typescript-eslint/triple-slash-reference': 'off'
+    }
+  },
   {
     files: ['**/*.{ts,tsx,js,jsx}'],
     rules: {
