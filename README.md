@@ -1,21 +1,34 @@
 # dLocal Microfrontend Platform
 
+## Tech Stack
+
+| Technology | Version | Notes |
+|------------|---------|-------|
+| **Next.js** | 15.5.9 | Pages Router (required for Module Federation) |
+| **React** | 19.2.3 | Latest React with concurrent features |
+| **Module Federation** | 8.8.51 | `@module-federation/nextjs-mf` |
+| **Nx** | 22.x | Monorepo orchestration |
+| **Node.js** | 20+ | LTS recommended |
+
 ## Architecture
 
 ```mermaid
 graph TD
-  Shell[Shell (Next.js host)]
-  Payments[Payments MFE]
-  Risk[Risk MFE]
-  Merchant[Merchant Portal MFE]
-  Reporting[Reporting MFE]
-  BFF[BFF (Node/Express API)]
-  Libs[Shared Libs (ui, auth, types)]
+  subgraph ClientSide [Client-Side Composition]
+    Shell[Shell - Next.js 15 Host]
+    Payments[Payments MFE]
+    Risk[Risk MFE]
+    Merchant[Merchant Portal MFE]
+    Reporting[Reporting MFE]
+  end
 
-  Shell --> Payments
-  Shell --> Risk
-  Shell --> Merchant
-  Shell --> Reporting
+  BFF[BFF - Node/Express API]
+  Libs[Shared Libs - ui, auth, types]
+
+  Shell -->|Runtime MF Load| Payments
+  Shell -->|Runtime MF Load| Risk
+  Shell -->|Runtime MF Load| Merchant
+  Shell -->|Runtime MF Load| Reporting
 
   Shell --> Libs
   Payments --> Libs
@@ -30,6 +43,9 @@ graph TD
   Reporting --> BFF
 ```
 
+> **Note: Client-Side MFE Loading**  
+> Remote MFE components are loaded **client-side only** via Module Federation. During server-side rendering, the shell displays skeleton placeholders. After hydration, the actual MFE components are fetched and rendered. This is the recommended pattern for `@module-federation/nextjs-mf` which does not support App Router or server-side remote loading.
+
 ## Hybrid Composition Strategy (Build-Time + Runtime)
 
 This platform blends **build-time composition** with **runtime composition**:
@@ -37,7 +53,7 @@ This platform blends **build-time composition** with **runtime composition**:
 - **Build-time composition** happens via shared Nx libraries (`libs/ui`, `libs/auth`, `libs/types`) that are compiled into each app. This keeps core UI and domain contracts consistent across the shell and MFEs.
 - **Runtime composition** is powered by **Module Federation**. The shell loads each MFE from its `remoteEntry.js` at runtime, allowing independent deployment and local development while keeping a cohesive UX.
 
-The shell resolves remote URLs via environment variables (e.g. `NEXT_PUBLIC_PAYMENTS_REMOTE_URL`) and loads MFE entry points dynamically with Next.js `dynamic()` imports.
+The shell resolves remote URLs via environment variables (e.g. `NEXT_PUBLIC_PAYMENTS_REMOTE_URL`) and loads MFE entry points dynamically using `React.lazy()` with client-side rendering.
 
 ## Running Locally
 
@@ -51,7 +67,7 @@ Common Nx commands:
 
 ```bash
 # Build all apps/libs
-pnpm nx run-many --target=build
+pnpm build
 
 # Lint all apps/libs
 pnpm nx run-many --target=lint
@@ -96,7 +112,7 @@ Typical pipeline stages for this monorepo:
 
 1. **Install** dependencies (`pnpm install`).
 2. **Lint/Test** all relevant projects with Nx (`nx run-many --target=lint/test`).
-3. **Build** apps (`nx run-many --target=build`).
+3. **Build** apps (`pnpm build` - includes required `NEXT_PRIVATE_LOCAL_WEBPACK=true`).
 4. **Publish artifacts** per app (shell, each MFE, and BFF).
 5. **Deploy** shell + MFEs independently to their respective environments, with BFF deployed alongside or as a separate service.
 
@@ -113,31 +129,51 @@ We follow a Gitflow-inspired workflow:
 ## Adding a New MFE and Integrating with the Shell
 
 1. **Generate the app** (Next.js MFE):
+   - Must use Page Router with Next.js v15 (App router not supported)
+
    ```bash
    pnpm nx g @nx/next:app my-mfe
    ```
 
-2. **Enable Module Federation** in the new MFE’s `next.config.js`:
-   - Add `NextFederationPlugin` with a unique `name`.
-   - Expose a `RemoteEntry` component.
+2. **Convert to Pages Router** (if generated with App Router):
+   - Create `apps/my-mfe/src/pages/` directory
+   - Add `_app.tsx`, `_document.tsx`, and `index.tsx`
+   - Remove the `app/` directory
 
-3. **Expose a Remote Entry**:
-   - Create `apps/my-mfe/src/app/RemoteEntry.tsx` and export the root UI.
-   - Configure `exposes` in the federation plugin:
-     ```js
-     exposes: {
-       './RemoteEntry': './src/app/RemoteEntry'
-     }
-     ```
+3. **Enable Module Federation** in the new MFE's `next.config.js`:
+   ```js
+   const { NextFederationPlugin } = require('@module-federation/nextjs-mf');
 
-4. **Register the remote in the shell**:
+   // Only apply on client side
+   if (!options.isServer) {
+     config.plugins.push(
+       new NextFederationPlugin({
+         name: 'myMfe',
+         filename: 'static/chunks/remoteEntry.js',
+         exposes: {
+           './RemoteEntry': './src/components/RemoteEntry'
+         },
+         shared: {
+           react: { singleton: true, requiredVersion: false },
+           'react-dom': { singleton: true, requiredVersion: false },
+           next: { singleton: true, requiredVersion: false }
+         }
+       })
+     );
+   }
+   ```
+
+4. **Create the Remote Entry component**:
+   - Create `apps/my-mfe/src/components/RemoteEntry.tsx` and export the root UI.
+
+5. **Register the remote in the shell**:
    - Add a new env var in `apps/shell/next.config.js` (e.g. `NEXT_PUBLIC_MY_MFE_REMOTE_URL`).
    - Add the remote mapping in `remotes`:
      ```js
      myMfe: `myMfe@${myMfeRemoteUrl}/_next/static/chunks/remoteEntry.js`
      ```
 
-5. **Add typings for the remote**:
+6. **Add typings for the remote**:
    - Update `apps/shell/src/remotes.d.ts`:
      ```ts
      declare module 'myMfe/RemoteEntry' {
@@ -146,12 +182,19 @@ We follow a Gitflow-inspired workflow:
      }
      ```
 
-6. **Render the new MFE in the shell UI**:
-   - Add a dynamic import in `apps/shell/src/app/MfeWorkspace.tsx` (or your routing layer):
+7. **Render the new MFE in the shell UI**:
+   - Add a lazy import in `apps/shell/src/components/MfeWorkspace.tsx`:
      ```ts
-     const MyMfeRemote = dynamic(() => import('myMfe/RemoteEntry'), { ssr: false });
+     const MyMfeRemote = lazy(() => import(/* webpackIgnore: true */ 'myMfe/RemoteEntry'));
      ```
+   - Wrap with `<Suspense>` and render only on client side.
 
-7. **Run in dev**:
+8. **Run in dev**:
    - Start the new MFE dev server, then the shell (or use `nx run-many`).
 
+## Module Federation Configuration Notes
+
+- **`NEXT_PRIVATE_LOCAL_WEBPACK=true`**: Required for Module Federation with Next.js 15. This is set automatically via `cross-env` in the build script.
+- **`webpack` dependency**: Must be installed as a direct dependency (not just through Next.js).
+- **Client-side only**: Module Federation plugin is only applied for client builds (`!options.isServer`).
+- **SSR handling**: The shell renders skeleton placeholders during SSR; MFEs load after hydration.
