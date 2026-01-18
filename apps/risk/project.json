@@ -14,9 +14,9 @@
       }
     },
     "dev": {
-      "executor": "@nx/next:dev",
+      "executor": "@nx/next:server",
       "options": {
-        "root": "apps/risk",
+        "buildTarget": "risk:build",
         "port": 4202
       }
     },

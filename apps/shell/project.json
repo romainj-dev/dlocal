@@ -14,9 +14,9 @@
       }
     },
     "dev": {
-      "executor": "@nx/next:dev",
+      "executor": "@nx/next:server",
       "options": {
-        "root": "apps/shell",
+        "buildTarget": "shell:build",
         "port": 4200
       }
     },

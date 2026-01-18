@@ -1,77 +1,6 @@
-import React, { lazy, Suspense, useEffect, useState } from 'react';
+import React from 'react';
 import { Card } from '@dlocal/ui';
-
-/**
- * Dynamic import wrapper that only loads on client side.
- * Module Federation remotes are only available in the browser.
- */
-function createRemoteComponent(remoteName: string, moduleName: string) {
-  // Return a component that lazy loads on the client
-  return lazy(() => {
-    // Dynamic import using template literal to prevent webpack static analysis
-    return import(/* webpackIgnore: true */ `${remoteName}/${moduleName}`);
-  });
-}
-
-// Create remote components - these will only be loaded on the client
-const PaymentsRemote = createRemoteComponent('payments', 'RemoteEntry');
-const RiskRemote = createRemoteComponent('risk', 'RemoteEntry');
-const MerchantPortalRemote = createRemoteComponent('merchantPortal', 'RemoteEntry');
-const ReportingRemote = createRemoteComponent('reporting', 'RemoteEntry');
-
-export function MfeWorkspace() {
-  // Track if we're on the client side
-  const [isClient, setIsClient] = useState(false);
-  
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  // Don't render remote components during SSR
-  if (!isClient) {
-    return (
-      <section className="mfe-grid">
-        <Card className="mfe-card"><MfeSkeleton title="Payments" /></Card>
-        <Card className="mfe-card"><MfeSkeleton title="Risk" /></Card>
-        <Card className="mfe-card"><MfeSkeleton title="Merchant Portal" /></Card>
-        <Card className="mfe-card"><MfeSkeleton title="Reporting" /></Card>
-      </section>
-    );
-  }
-
-  return (
-    <section className="mfe-grid">
-      <Card className="mfe-card">
-        <MfeErrorBoundary title="Payments">
-          <Suspense fallback={<MfeSkeleton title="Payments" />}>
-            <PaymentsRemote />
-          </Suspense>
-        </MfeErrorBoundary>
-      </Card>
-      <Card className="mfe-card">
-        <MfeErrorBoundary title="Risk">
-          <Suspense fallback={<MfeSkeleton title="Risk" />}>
-            <RiskRemote />
-          </Suspense>
-        </MfeErrorBoundary>
-      </Card>
-      <Card className="mfe-card">
-        <MfeErrorBoundary title="Merchant Portal">
-          <Suspense fallback={<MfeSkeleton title="Merchant Portal" />}>
-            <MerchantPortalRemote />
-          </Suspense>
-        </MfeErrorBoundary>
-      </Card>
-      <Card className="mfe-card">
-        <MfeErrorBoundary title="Reporting">
-          <Suspense fallback={<MfeSkeleton title="Reporting" />}>
-            <ReportingRemote />
-          </Suspense>
-        </MfeErrorBoundary>
-      </Card>
-    </section>
-  );
-}
+import dynamic from 'next/dynamic';
 
 function MfeSkeleton({ title }: { title: string }) {
   return (
@@ -81,6 +10,55 @@ function MfeSkeleton({ title }: { title: string }) {
       <div className="mfe-skeleton__line" />
       <div className="mfe-skeleton__line mfe-skeleton__line--short" />
     </div>
+  );
+}
+
+/**
+ * Remote components loaded via Module Federation.
+ * Using next/dynamic with ssr:false ensures they only load on the client
+ * where the federation runtime is available.
+ */
+const PaymentsRemote = dynamic(() => import('payments/RemoteEntry'), {
+  ssr: false,
+  loading: () => <MfeSkeleton title="Payments" />,
+});
+const RiskRemote = dynamic(() => import('risk/RemoteEntry'), {
+  ssr: false,
+  loading: () => <MfeSkeleton title="Risk" />,
+});
+const MerchantPortalRemote = dynamic(() => import('merchantPortal/RemoteEntry'), {
+  ssr: false,
+  loading: () => <MfeSkeleton title="Merchant Portal" />,
+});
+const ReportingRemote = dynamic(() => import('reporting/RemoteEntry'), {
+  ssr: false,
+  loading: () => <MfeSkeleton title="Reporting" />,
+});
+
+export function MfeWorkspace() {
+  return (
+    <section className="mfe-grid">
+      <Card className="mfe-card">
+        <MfeErrorBoundary title="Payments">
+          <PaymentsRemote />
+        </MfeErrorBoundary>
+      </Card>
+      <Card className="mfe-card">
+        <MfeErrorBoundary title="Risk">
+          <RiskRemote />
+        </MfeErrorBoundary>
+      </Card>
+      <Card className="mfe-card">
+        <MfeErrorBoundary title="Merchant Portal">
+          <MerchantPortalRemote />
+        </MfeErrorBoundary>
+      </Card>
+      <Card className="mfe-card">
+        <MfeErrorBoundary title="Reporting">
+          <ReportingRemote />
+        </MfeErrorBoundary>
+      </Card>
+    </section>
   );
 }
 

@@ -6,7 +6,7 @@
   "scripts": {
     "nx": "nx",
     "build": "cross-env NEXT_PRIVATE_LOCAL_WEBPACK=true nx run-many --target=build",
-    "dev": "cross-env NEXT_PRIVATE_LOCAL_WEBPACK=true nx run shell:dev",
+    "dev": "cross-env NEXT_PRIVATE_LOCAL_WEBPACK=true nx run-many --target=dev --projects=shell,payments,risk,merchant-portal,reporting --parallel=5",
     "lint": "nx run-many --target=lint",
     "test": "nx run-many --target=test"
   },
