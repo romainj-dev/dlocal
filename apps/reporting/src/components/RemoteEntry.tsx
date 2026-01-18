@@ -1,5 +1,3 @@
-'use client';
-
 import { SectionHeading } from '@dlocal/ui';
 
 export default function RemoteEntry() {

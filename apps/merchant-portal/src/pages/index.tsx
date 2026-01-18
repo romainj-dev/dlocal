@@ -1,5 +1,3 @@
-'use client';
-
 import { type ChangeEvent, type FormEvent, useEffect, useState } from 'react';
 import { Button, Card, SectionHeading } from '@dlocal/ui';
 import { useAuth } from '@dlocal/auth';
@@ -36,7 +34,9 @@ export default function MerchantPortalPage() {
     if (!profile) {
       return;
     }
-    const { name, value, type, checked } = event.target;
+    const target = event.target;
+    const { name, value, type } = target;
+    const checked = target instanceof HTMLInputElement ? target.checked : false;
     setProfile({
       ...profile,
       [name]: type === 'checkbox' ? checked : value

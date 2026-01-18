@@ -5,17 +5,16 @@ const nextConfig = {
   nx: {
     svgr: false
   },
-  experimental: {
-    turbo: {}
-  },
   webpack(config, options) {
+    // Only apply Module Federation on the client side for remotes/MFEs
+    // Server-side would cause React hook errors due to multiple React instances
     if (!options.isServer) {
       config.plugins.push(
         new NextFederationPlugin({
           name: 'risk',
           filename: 'static/chunks/remoteEntry.js',
           exposes: {
-            './RemoteEntry': './src/app/RemoteEntry'
+            './RemoteEntry': './src/components/RemoteEntry'
           },
           shared: {
             react: { singleton: true, requiredVersion: false },

@@ -1,5 +1,6 @@
 import { Card, SectionHeading } from '@dlocal/ui';
-import { MfeWorkspace } from './MfeWorkspace';
+
+import { MfeWorkspace } from '../components/MfeWorkspace';
 
 const modules = [
   {

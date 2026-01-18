@@ -1,5 +1,3 @@
-'use client';
-
 import { useEffect, useState } from 'react';
 import { Button, Card, SectionHeading } from '@dlocal/ui';
 import { useAuth } from '@dlocal/auth';

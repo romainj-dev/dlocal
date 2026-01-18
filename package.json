@@ -5,8 +5,8 @@
   "packageManager": "pnpm@10.28.0",
   "scripts": {
     "nx": "nx",
-    "build": "nx run-many --target=build",
-    "dev": "nx run shell:dev",
+    "build": "cross-env NEXT_PRIVATE_LOCAL_WEBPACK=true nx run-many --target=build",
+    "dev": "cross-env NEXT_PRIVATE_LOCAL_WEBPACK=true nx run shell:dev",
     "lint": "nx run-many --target=lint",
     "test": "nx run-many --target=test"
   },
@@ -15,7 +15,8 @@
     "tslib": "^2.8.1",
     "next": "^15.5.9",
     "react": "^19.2.3",
-    "react-dom": "^19.2.3"
+    "react-dom": "^19.2.3",
+    "webpack": "^5.99.9"
   },
   "devDependencies": {
     "@module-federation/nextjs-mf": "^8.8.51",
@@ -31,6 +32,7 @@
     "@types/react": "^19.2.8",
     "@types/react-dom": "^19.2.3",
     "@typescript-eslint/parser": "^8.53.0",
+    "cross-env": "^7.0.3",
     "eslint": "^9.39.2",
     "eslint-config-next": "^15.5.9",
     "eslint-config-prettier": "^10.1.8",

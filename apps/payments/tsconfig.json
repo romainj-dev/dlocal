@@ -6,8 +6,17 @@
     "strict": true,
     "noEmit": true,
     "incremental": true,
-    "plugins": [{ "name": "next" }],
-    "types": ["node"]
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "types": [
+      "node"
+    ],
+    "module": "esnext",
+    "resolveJsonModule": true,
+    "isolatedModules": true
   },
   "include": [
     "next-env.d.ts",
@@ -15,5 +24,9 @@
     "src/**/*.tsx",
     ".next/types/**/*.ts"
   ],
-  "exclude": ["node_modules", "**/*.spec.ts", "**/*.test.tsx"]
+  "exclude": [
+    "node_modules",
+    "**/*.spec.ts",
+    "**/*.test.tsx"
+  ]
 }

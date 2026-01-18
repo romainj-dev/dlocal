@@ -1,5 +1,3 @@
-'use client';
-
 import React, { createContext, useContext, useMemo, useState } from 'react';
 import type { AuthUser } from '@dlocal/types';
 

@@ -19,14 +19,14 @@ const nextConfig = {
     NEXT_PUBLIC_MERCHANT_PORTAL_REMOTE_URL: merchantPortalRemoteUrl,
     NEXT_PUBLIC_REPORTING_REMOTE_URL: reportingRemoteUrl
   },
-  experimental: {
-    turbo: {}
-  },
   webpack(config, options) {
+    // Only apply Module Federation on the client side
+    // Server-side rendering of remote components requires additional setup
     if (!options.isServer) {
       config.plugins.push(
         new NextFederationPlugin({
           name: 'shell',
+          filename: 'static/chunks/remoteEntry.js',
           remotes: {
             payments: `payments@${paymentsRemoteUrl}/_next/static/chunks/remoteEntry.js`,
             risk: `risk@${riskRemoteUrl}/_next/static/chunks/remoteEntry.js`,
